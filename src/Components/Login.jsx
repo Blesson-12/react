@@ -2,25 +2,41 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 const Login = () => {
-    const [data, setData] = useState({
-        username: "blesson",
-        password: "123456789"
-    });
+    const [email, setEmail] = useState()
+    const [pass, setPass] = useState()
     const navigate = useNavigate();
 
-    const handleChange = (e) => {
-        const { name, value } = e.target;
-        setData(prev => ({ ...prev, [name]: value }));
-    }
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
-        console.log(data);
-        if (data.username === "blesson" && data.password === "123456789") {
-            alert("Login Successful");
-            navigate('/admin');
-        } else {
-            alert("Invalid Username and Password");
+        try {
+            if (email.length > 0 && pass.length > 0) {
+                const post = await fetch(`https://academy-management-1.onrender.com/auth/login`, {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify({ email, password: pass })
+                })
+                
+            const text = await post.text();    
+            let data;
+
+            try {
+                data = JSON.parse(text);       
+            } catch {
+                data = { message: text };      
+            }     if (!post.ok) {
+                    alert(data.message || "Invalid credentials")
+                    return
+                }
+                localStorage.setItem("token", data.token);
+                alert("login successfull")
+                navigate('/admin')
+            }
+        }
+        catch (err) {
+            console.log(err.message)
         }
     }
 
@@ -28,22 +44,23 @@ const Login = () => {
         <>
             <div className='login'>
                 <h2 className='text-center text-warning '>Admin Login</h2>
-                    <hr className="border border-warning w-25 mx-auto" />
+                <hr className="border border-warning w-25 mx-auto" />
 
                 <div className='container d-flex justify-content-center mt-5'>
-                    <div className='container bg-light justify-content-center border border-warning w-100 p-5 rounded-3 mt-5'style={{ maxWidth: '800px' }}>
+                    <div className='container bg-light justify-content-center border border-warning w-100 p-5 rounded-3 mt-5' style={{ maxWidth: '800px' }}>
                         <form onSubmit={handleSubmit}>
                             <div className='container row align-items-center'>
                                 <div className="mb-4 mt-4 row">
-                                    <label htmlFor="username" className="col-5 col-form-label text-dark">Username</label>
+                                    <label htmlFor="username" className="col-5 col-form-label text-dark">Email</label>
                                     <div className="col-6">
                                         <input
                                             type="text"
                                             name='username'
                                             className="form-control border border-dark"
                                             id="username"
-                                            onChange={handleChange}
-                                            value={data.username}
+
+                                            value={email}
+                                            onChange={(e) => setEmail(e.target.value)}
                                         />
                                     </div>
                                 </div>
@@ -58,8 +75,9 @@ const Login = () => {
                                             className="form-control border border-dark"
                                             id="inputPassword"
                                             placeholder="Enter Password"
-                                            onChange={handleChange}
-                                            value={data.password}
+
+                                            value={pass}
+                                            onChange={(e) => setPass(e.target.value)}
                                         />
                                     </div>
                                 </div>

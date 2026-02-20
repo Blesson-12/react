@@ -1,11 +1,10 @@
 import { useState, useEffect } from 'react'
 
-
+const API = "https://academy-management-1.onrender.com"
 const AddCourse = () => {
     const [detail, setDetail] = useState({
         coursename: "",
         description: "",
-        fees: "",
         duration: "",
 
     });
@@ -13,40 +12,57 @@ const AddCourse = () => {
     const [isSubmitting, setIsSubmitting] = useState(false);
 
     useEffect(() => {
-        const savedCourses = JSON.parse(localStorage.getItem('courseDetails')) || [];
-        setCourses(savedCourses);
+        loadCourses()
     }, [])
 
+    const loadCourses = async () => {
+        try {
+            const res = await fetch(`${API}/admin/course`, {
+                headers: {
+                    "Authorization": "Bearer " + localStorage.getItem("token")
+                }
+            })
+            if (!res.ok) throw new Error("Failed to fetch courses")
+            const data = await res.json()
+            setCourses(Array.isArray(data) ? data : [])
+
+        } catch (err) {
+            console.log("Error ", err);
+            setCourses([]);
+        }
+
+    }
     const handleChange = (e) => {
         const { name, value } = e.target;
         setDetail(prev => ({ ...prev, [name]: value }));
     }
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
-
+        const newDetails = { ...detail }
         if (!detail.coursename.trim() || !detail.description.trim()) {
             alert("Please fill in all fields");
             return;
         }
-
-        setIsSubmitting(true);
-
-
         try {
+            setIsSubmitting(true);
 
+            const res = await fetch(`${API}/admin/course`, {
+                method: "POST",
+                headers: {
+                    "content-type": "application/json",
+                    "Authorization": "Bearer " + localStorage.getItem("token")
+                }, body:
+                    JSON.stringify(newDetails)
+            });
+            if (!res.ok) {
+                const errorData = await res.json();
+                throw new Error(errorData.error || "Failed to add course");
+            }
 
-            const newDetails = {
-                id: Date.now(),
-                ...detail,
-            };
-
-            const updatedCourses = [...courses, newDetails];
-            setCourses(updatedCourses);
-            localStorage.setItem("courseDetails", JSON.stringify(updatedCourses));
-
-
-            setDetail({ coursename: "", description: "", fees: "", duration: "" });
+            const data = await res.json();
+            setCourses(prev => [...prev, data])
+            setDetail({ coursename: "", description: "", duration: "" });
 
         } catch (err) {
             console.error("Error:", err);
@@ -56,17 +72,26 @@ const AddCourse = () => {
         }
 
     }
-    const handleDelete = (id) => {
-        const newUpdated = courses.filter(entry => entry.id !== id);
-        localStorage.setItem('courseDetails', JSON.stringify(newUpdated));
-        setCourses(newUpdated);
+    const handleDelete = async (id) => {
+        try {
+            const res = await fetch(`${API}/admin/course/${id}`, {
+                method: "DELETE",
+                headers: {
+                    "Authorization": "Bearer " + localStorage.getItem("token")
+                }
+            })
+            if (!res.ok) throw new Error("Failed to delete course")
+            setCourses(prev => prev.filter(c => c._id !== id))
+        } catch (err) {
+            console.error("Error:", err);
+        }
     }
 
     return (
         <>
             <section className=''>
                 <div className='pb-3 my-5'>
-                <h2 className='text-warning'>List Of Courses</h2>
+                    <h2 className='text-warning'>List Of Courses</h2>
                 </div>
                 <div className='table-responsive'>
                     <table className='table table-sm table-striped table-secondary table-bordered'>
@@ -75,21 +100,19 @@ const AddCourse = () => {
                                 <th>S.NO</th>
                                 <th>COURSE NAME</th>
                                 <th>COURSE DESCRIPTION</th>
-                                <th>COURSE FEES</th>
                                 <th>COURSE DURATION</th>
                                 <th>ACTIONS</th>
                             </tr>
                         </thead>
                         <tbody>
                             {courses.map((course, index) => (
-                                <tr key={index}>
+                                <tr key={course._id}>
                                     <td>{index + 1}</td>
                                     <td>{course.coursename}</td>
                                     <td>{course.description}</td>
-                                    <td>{course.fees}</td>
                                     <td>{course.duration}</td>
                                     <td>
-                                        <button className='btn btn-warning' onClick={() => { handleDelete(course.id) }}>DELETE</button>
+                                        <button className='btn btn-warning' onClick={() => handleDelete(course._id)}>DELETE</button>
                                     </td>
                                 </tr>
                             ))
@@ -106,7 +129,7 @@ const AddCourse = () => {
                 <div className='d-flex align-items-center justify-content-center mt-5 ' style={{ maxWidth: '1200px' }}>
                     <form className='container align-items-center' onSubmit={handleSubmit}>
                         <div className='d-flex mb-3 gap-4'>
-                            <label htmlFor='coursename' className='col-2 text-light' style={{minWidth:"150px"}}>Course Name :</label>
+                            <label htmlFor='coursename' className='col-2 text-light' style={{ minWidth: "150px" }}>Course Name :</label>
                             <input
                                 type="text"
                                 name='coursename'
@@ -119,7 +142,7 @@ const AddCourse = () => {
                             />
                         </div>
                         <div className='d-flex mb-3 gap-4'>
-                            <label htmlFor='description' className='col-2 text-light'style={{minWidth:"150px"}}>Course Description :</label>
+                            <label htmlFor='description' className='col-2 text-light' style={{ minWidth: "150px" }}>Course Description :</label>
                             <input
                                 type="text"
                                 name='description'
@@ -131,21 +154,9 @@ const AddCourse = () => {
                                 disabled={isSubmitting}
                             />
                         </div>
+
                         <div className='d-flex mb-3 gap-4'>
-                            <label htmlFor='fees' className='col-2 text-light'style={{minWidth:"150px"}}> Course Fees :</label>
-                            <input
-                                type='text'
-                                name='fees'
-                                id='fees'
-                                className='form-control w-50'
-                                placeholder='Enter the Course Fees'
-                                value={detail.fees}
-                                onChange={handleChange}
-                                disabled={isSubmitting}
-                            />
-                        </div>
-                        <div className='d-flex mb-3 gap-4'>
-                            <label htmlFor='duration' className='col-2 text-light'style={{minWidth:"150px"}}>Course Duration :</label>
+                            <label htmlFor='duration' className='col-2 text-light' style={{ minWidth: "150px" }}>Course Duration :</label>
                             <input
                                 type='text'
                                 name='duration'

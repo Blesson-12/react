@@ -15,7 +15,7 @@ function Layout() {
   const showFooter = location.pathname === '/'
   const isAdmin = location.pathname === '/admin'
   const isLogin = location.pathname === '/login'
-
+  //localStorage.setItem("token",JSON.stringify(eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY5MzI4ZGVhZDM5NmFkNzllMTBhZDk0NiIsInJvbGUiOiJhZG1pbiIsImlhdCI6MTc2NDkyMTgyNiwiZXhwIjoxNzY1MDA4MjI2fQ.zFGo7j47ctphSsgZn64Zx4ZicOtbAjtmu54XjpkcY0w))
   return (
     <>
       <nav className='navbar navbar-expand-lg navbar-dark fixed-top '>
@@ -38,34 +38,34 @@ function Layout() {
                   <li className='nav-item'><a className='nav-link' href='#about'>About</a></li>
                   <li className='nav-item'><a className='nav-link' href='#contact'>Contact Us</a></li>
                 </>)}
-                {
-                isAdmin &&(
+              {
+                isAdmin && (
                   <>
-                  
-                      <li className='nav-item'><a className='nav-link' href='#enquiry'>Enquiry Details</a></li>
-                      <li className='nav-item'><a className='nav-link' href='#addcourse'>Add Courses</a></li>
+
+                    <li className='nav-item'><a className='nav-link' href='#enquiry'>Enquiry Details</a></li>
+                    <li className='nav-item'><a className='nav-link' href='#addcourse'>Add Courses</a></li>
                   </>
                 )
               }
             </ul>
-                { !isAdmin && !isLogin &&
-            <div className='col-4 text-end ms-auto me-5'>
-              <Link to="/login"><button id='login' className='btn btn-warning '>Admin</button></Link>
-            </div>
-              }
-              {isLogin && (
+            {!isAdmin && !isLogin &&
+              <div className='col-4 text-end ms-auto me-5'>
+                <Link to="/login"><button id='login' className='btn btn-warning '>Admin</button></Link>
+              </div>
+            }
+            {isLogin && (
+              <div className='col-4 text-end ms-auto me-5'>
+                <a href="/"><button className='btn btn-warning' id='back'>Back</button></a>
+              </div>
+            )}
+            {
+              isAdmin && (
                 <div className='col-4 text-end ms-auto me-5'>
-                  <a href="/"><button className='btn btn-warning' id='back'>Back</button></a>
+                  <a href='/'><button id='logout' className='btn btn-warning '>Logout</button></a>
                 </div>
-              )}
-              {
-                isAdmin && (
-                  <div className='col-4 text-end ms-auto me-5'>
-                      <a href='/'><button id='logout' className='btn btn-warning '>Logout</button></a>
-                  </div>
-                )
-              }
-              
+              )
+            }
+
           </div>
         </div>
 
@@ -77,14 +77,14 @@ function Layout() {
 
       {showFooter && (
         <footer>
-        <div className="container text-center py-2">
-            
+          <div className="container text-center py-2">
+
             <div className="text-light small">
               © 2024 Success Academy. All rights reserved.
             </div>
 
-        </div>
-      </footer>
+          </div>
+        </footer>
       )}
     </>
   )
@@ -107,10 +107,9 @@ function App() {
       <Routes>
         <Route path="/" element={<Layout />}>
           <Route index element={<HomePage />} />
-          <Route path="login" element={<Login />} />
+          <Route path="/login" element={<Login />} />
           <Route path="/admin" element={<Admin />} />
         </Route>
-       <Route path="/admin" element={<Admin />} />
 
       </Routes>
     </BrowserRouter>

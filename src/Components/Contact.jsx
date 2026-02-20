@@ -1,26 +1,43 @@
 import React, { useEffect, useState } from 'react';
-
+const API = "https://academy-management-1.onrender.com"
 const Contact = () => {
   const [form, setForm] = useState({ name: '', mobile: '', email: '', course: '' });
   const [course, setCourse] = useState([]);
 
   useEffect(() => {
-    const loadCourses = JSON.parse(localStorage.getItem("courseDetails")) || [];
-    setCourse(loadCourses);
-  }, []);
+    loadCourses()
+  }, [])
+
+  const loadCourses = async () => {
+    try {
+      const res = await fetch(`${API}/user/course`)
+      if (!res.ok) throw new Error("Failed to fetch courses")
+      const data = await res.json()
+      setCourse(Array.isArray(data) ? data : [])
+    } catch (err) {
+      console.log("Error ", err);
+      setCourse([]);
+    }
+
+  }
 
   const handleChange = (e) => {
     const { name, value } = e.target;
     setForm(prev => ({ ...prev, [name]: value }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    const ExistingDetails = JSON.parse(localStorage.getItem("EnquiryDetails")) || [];
-    const newEntries = { ...form, id: Date.now(), submittedAt: new Date().toISOString() };
-    const updateDetails = [...ExistingDetails, newEntries];
     try {
-      localStorage.setItem("EnquiryDetails", JSON.stringify(updateDetails));
+      const res = await fetch(`${API}/user/enquiry`, {
+        method: "POST",
+        headers: {
+          "content-type": "application/json",
+        }, body: JSON.stringify(form)
+      })
+      if (!res.ok) throw new Error("Failed to Submit enquiry Details")
+      const data = res.json();
+
       alert("Enquiry Details Submitted");
       setForm({ name: "", mobile: "", email: "", course: "" });
     } catch (err) {

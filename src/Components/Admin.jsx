@@ -1,8 +1,7 @@
-import React from 'react'
 import { useEffect, useState } from 'react'
 import AddCourse from './AddCourse'
 import '../App.css'
-
+const API = "https://academy-management-1.onrender.com"
 const Admin = () => {
   const [entries, setEntries] = useState([])
 
@@ -11,28 +10,59 @@ const Admin = () => {
   }, [])
 
 
-  const loadEntries = () => {
+  const loadEntries = async () => {
     try {
-      const savedEntries = JSON.parse(localStorage.getItem('EnquiryDetails')) || [];
-      setEntries(Array.isArray(savedEntries) ? savedEntries : []);
+      const res = await fetch(`${API}/admin/enquiry`,{
+        method:"GET",
+        headers:{
+          "Authorization": "Bearer " + localStorage.getItem("token")
+        }
+      })
+      //if(!res.ok) throw new Error("Failed to fetch")
+      const data = await res.json()
+      setEntries(data);
+      console.log(data)
+
     } catch (err) {
-      console.log("Error ", err);
+      console.log("Error ", err.message);
       alert("failed to load enguiry details")
       setEntries([]);
     }
   }
 
 
-  const deleteEntries = (id) => {
-    const updatedItems = entries.filter(entry => entry.id != id)
-    localStorage.setItem("EnquiryDetails", JSON.stringify(updatedItems))
-    setEntries(updatedItems)
+  const deleteEntries = async(id) => {
+    try{
+      const res = await fetch(`${API}/admin/enquiry/${id}`,{
+        method:"DELETE",
+        headers:{
+          "Authorization": "Bearer " + localStorage.getItem("token")
+
+        }
+      })
+      if(!res.ok) throw new Error("Failed to delete enquiry")
+      setEntries(prev=> prev.filter(entry => entry._id !==id))
+    }catch(err){
+      console.log("Error ", err.message);
+    }
   }
 
 
-  const clearAll = () => {
-    localStorage.removeItem("EnquiryDetails")
-    setEntries([])
+  const clearAll = async() => {
+    try{
+      const res = await fetch(`${API}/admin/enquiry`,{
+        method:"DELETE",
+        headers:{
+             "Authorization": "Bearer " + localStorage.getItem("token")
+
+        }
+      })
+      if(!res.ok) throw new Error("Failed to clear enquires")
+      setEntries([])
+    alert("All Enquiries cleared")
+    }catch(err){
+      console.log("error",err.message)
+    }
   }
 
 
@@ -42,30 +72,7 @@ const Admin = () => {
         <h2 className='text-center text-warning'>Admin Page</h2>
         <hr className="border border-warning w-25 mx-auto" />
 
-        {/* <nav className='navbar navbar-expand-lg navbar-dark fixed-top nav'>
-          <div className='container borde'>
-            <div className='d-flex align-items-center col-4'>
-              <img src="/assets/logo.png" className='rounded-circle border border-light p-2' height='60' alt="logo" />
-              <h2 className='text-light m-0 fs-3 ms-3'>Success Academy</h2>
-            </div>
-
-            <button className="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-              <span className="navbar-toggler-icon"></span>
-            </button>
-
-            <div className='collapse navbar-collapse ' id="navbarNav">
-              <div className='col-4'>
-              <ul className='navbar-nav me-auto mb-1 mb-lg-0 ms-1'>
-                <li className='nav-item'><a className='nav-link' href='#enquiry'>Enquiry Details</a></li>
-                <li className='nav-item'><a className='nav-link' href='#addcourse'>Add Courses</a></li>
-              </ul>
-              </div>
-              <div className='col-4 text-end ms-auto'>
-                <a href='/'><button id='logout' className='btn btn-warning '>Logout</button></a>
-              </div>
-            </div>
-          </div>
-        </nav> */}
+       
       </div>
       <section id='enquiry'>
         <div>
@@ -80,36 +87,38 @@ const Admin = () => {
             <h6>No enquiry received</h6>
           ) : (
             <div className='mt-4'>
-            <div className='table-responsive'>
-              <table className='table table-sm table-striped table-dark table-bordered border-light'>
-                <thead>
-                  <tr>
-                    <th>ID</th>
-                    <th>NAME</th>
-                    <th>MOBILE</th>
-                    <th>EMAIL</th>
-                    <th>COURSE</th>
-                    <th>SUBMITTED AT</th>
-                    <th>ACTIONS</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {entries.map((e, id) => (
-                    <tr key={e.id ?? id}>
-                      <td>{[id + 1]}</td>
-                      <td>{e.name}</td>
-                      <td>{e.mobile}</td>
-                      <td>{e.email}</td>
-                      <td>{e.course}</td>
-                      <td>{e.submittedAt ? new Date(e.submittedAt).toLocaleString() : "-"}</td>
-                      <td>
-                        <button className='btn btn-sm btn-warning' onClick={() => deleteEntries(e.id)}>DELETE</button>
-                      </td>
+              <div className='table-responsive'>
+                <table className='table table-sm table-striped table-dark table-bordered border-light'>
+                  <thead>
+                    <tr>
+                      <th>ID</th>
+                      <th>NAME</th>
+                      <th>MOBILE</th>
+                      <th>EMAIL</th>
+                      <th>COURSE</th>
+                      <th>SUBMITTED AT</th>
+                      <th>ACTIONS</th>
                     </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
+                  </thead>
+                  <tbody>
+                    {entries.map((e, id) => {
+                      return (
+                        <tr key={id + 1}>
+                          <td>{id + 1}</td>
+                          <td>{e.name}</td>
+                          <td>{e.mobile}</td>
+                          <td>{e.email}</td>
+                          <td>{e.course}</td>
+                          <td>{e.submittedAt ? new Date(e.submittedAt).toLocaleString() : "-"}</td>
+                          <td>
+                            <button className='btn btn-sm btn-warning' onClick={() => deleteEntries(e._id)}>DELETE</button>
+                          </td>
+                        </tr>
+                      )
+                    })}
+                  </tbody>
+                </table>
+              </div>
             </div>
           )}
         </div>
