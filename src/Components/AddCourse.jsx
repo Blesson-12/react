@@ -1,4 +1,5 @@
-import { useState, useEffect } from 'react'
+﻿import { useState, useEffect } from 'react'
+import { motion as Motion } from 'framer-motion'
 
 const API = "https://academy-management-1.onrender.com"
 const AddCourse = () => {
@@ -89,12 +90,18 @@ const AddCourse = () => {
 
     return (
         <>
-            <section className=''>
-                <div className='pb-3 my-5'>
-                    <h2 className='text-warning'>List Of Courses</h2>
+            <Motion.section
+                className='glass-panel p-3 p-md-4'
+                initial={{ opacity: 0, y: 18 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, amount: 0.2 }}
+                transition={{ duration: 0.45 }}
+            >
+                <div className='pb-3'>
+                    <h2 className='section-title'>List Of Courses</h2>
                 </div>
-                <div className='table-responsive'>
-                    <table className='table table-sm table-striped table-secondary table-bordered'>
+                <div className='table-responsive modern-table-wrap'>
+                    <table className='table table-sm table-striped table-bordered modern-table'>
                         <thead>
                             <tr>
                                 <th>S.NO</th>
@@ -112,7 +119,7 @@ const AddCourse = () => {
                                     <td>{course.description}</td>
                                     <td>{course.duration}</td>
                                     <td>
-                                        <button className='btn btn-warning' onClick={() => handleDelete(course._id)}>DELETE</button>
+                                        <button className='btn btn-sm danger-btn' onClick={() => handleDelete(course._id)}>DELETE</button>
                                     </td>
                                 </tr>
                             ))
@@ -121,33 +128,48 @@ const AddCourse = () => {
                         </tbody>
                     </table>
                 </div>
-            </section>
-            <div className='my-5'>
-                <h2 className='text-warning mb-5'>Add Course</h2>
-            </div>
-            <div className='container '>
-                <div className='d-flex align-items-center justify-content-center mt-5 ' style={{ maxWidth: '1200px' }}>
+            </Motion.section>
+            <Motion.div
+                className='my-2'
+                initial={{ opacity: 0, y: 14 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, amount: 0.4 }}
+                transition={{ duration: 0.4, delay: 0.05 }}
+            >
+                <h2 className='section-title mb-3'>Add Course</h2>
+                <hr className='section-divider border w-25' />
+            </Motion.div>
+            <Motion.div
+                className='container glass-panel p-3 p-md-4'
+                initial={{ opacity: 0, y: 18 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, amount: 0.2 }}
+                transition={{ duration: 0.45, delay: 0.08 }}
+            >
+                <div className='d-flex align-items-center justify-content-center' style={{ maxWidth: '1200px' }}>
                     <form className='container align-items-center' onSubmit={handleSubmit}>
-                        <div className='d-flex mb-3 gap-4'>
-                            <label htmlFor='coursename' className='col-2 text-light' style={{ minWidth: "150px" }}>Course Name :</label>
+                        <div className='d-flex flex-column flex-md-row align-items-md-center mb-3 gap-2 gap-md-4'>
+                            <label htmlFor='coursename' className='soft-title addcourse-label'>Course Name :</label>
                             <input
                                 type="text"
                                 name='coursename'
                                 id='coursename'
-                                className='form-control w-50'
+                                className='form-control modern-input w-100'
+                                style={{ maxWidth: "540px" }}
                                 placeholder='Enter Course Name'
                                 value={detail.coursename}
                                 onChange={handleChange}
                                 disabled={isSubmitting}
                             />
                         </div>
-                        <div className='d-flex mb-3 gap-4'>
-                            <label htmlFor='description' className='col-2 text-light' style={{ minWidth: "150px" }}>Course Description :</label>
+                        <div className='d-flex flex-column flex-md-row align-items-md-center mb-3 gap-2 gap-md-4'>
+                            <label htmlFor='description' className='soft-title addcourse-label'>Course Description :</label>
                             <input
                                 type="text"
                                 name='description'
                                 id='description'
-                                className='form-control w-50'
+                                className='form-control modern-input w-100'
+                                style={{ maxWidth: "540px" }}
                                 placeholder='Enter Course Description'
                                 value={detail.description}
                                 onChange={handleChange}
@@ -155,13 +177,14 @@ const AddCourse = () => {
                             />
                         </div>
 
-                        <div className='d-flex mb-3 gap-4'>
-                            <label htmlFor='duration' className='col-2 text-light' style={{ minWidth: "150px" }}>Course Duration :</label>
+                        <div className='d-flex flex-column flex-md-row align-items-md-center mb-3 gap-2 gap-md-4'>
+                            <label htmlFor='duration' className='soft-title addcourse-label'>Course Duration :</label>
                             <input
                                 type='text'
                                 name='duration'
                                 id='duration'
-                                className='form-control w-50'
+                                className='form-control modern-input w-100'
+                                style={{ maxWidth: "540px" }}
                                 placeholder='Enter the Course duration'
                                 value={detail.duration}
                                 onChange={handleChange}
@@ -170,7 +193,7 @@ const AddCourse = () => {
                         </div>
 
                         <button
-                            className='btn btn-primary d-block mx-auto'
+                            className='btn modern-btn d-block mx-auto mt-2'
                             type='submit'
                             disabled={isSubmitting}
                         >
@@ -178,9 +201,10 @@ const AddCourse = () => {
                         </button>
                     </form>
                 </div>
-            </div>
+            </Motion.div>
         </>
     )
 }
 
 export default AddCourse
+

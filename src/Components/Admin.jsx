@@ -1,5 +1,6 @@
-import { useEffect, useState } from 'react'
+﻿import { useEffect, useState } from 'react'
 import AddCourse from './AddCourse'
+import { motion as Motion } from 'framer-motion'
 import '../App.css'
 const API = "https://academy-management-1.onrender.com"
 const Admin = () => {
@@ -68,27 +69,38 @@ const Admin = () => {
 
   return (
     <>
-      <div className='container my-4 adminpage'>
-        <h2 className='text-center text-warning'>Admin Page</h2>
-        <hr className="border border-warning w-25 mx-auto" />
+      <Motion.div
+        className='container adminpage'
+        initial={{ opacity: 0, y: 16 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.45 }}
+      >
+        <h2 className='text-center section-title'>Admin Page</h2>
+        <hr className="border section-divider w-25 mx-auto" />
 
-       
-      </div>
-      <section id='enquiry'>
+      </Motion.div>
+      <Motion.section
+        id='enquiry'
+        className='glass-panel p-3 p-md-4'
+        initial={{ opacity: 0, y: 18 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true, amount: 0.2 }}
+        transition={{ duration: 0.5, delay: 0.1 }}
+      >
         <div>
-          <h2 className='text-warning'>Enguiry Details</h2>
+          <h2 className='section-title'>Enguiry Details</h2>
         </div>
-        <div className="mb-3 d-flex justify-content-end gap-2">
-          <button className="btn btn-sm btn-secondary" onClick={loadEntries}>Refresh</button>
-          <button className="btn btn-sm btn-danger" onClick={clearAll} disabled={entries.length === 0}>Clear All</button>
+        <div className="mb-3 d-flex flex-column flex-sm-row justify-content-sm-end gap-2">
+          <button className="btn btn-sm modern-btn-outline" onClick={loadEntries}>Refresh</button>
+          <button className="btn btn-sm danger-btn" onClick={clearAll} disabled={entries.length === 0}>Clear All</button>
         </div>
         <div className=''>
           {entries.length === 0 ? (
-            <h6>No enquiry received</h6>
+            <h6 className='soft-title'>No enquiry received</h6>
           ) : (
             <div className='mt-4'>
-              <div className='table-responsive'>
-                <table className='table table-sm table-striped table-dark table-bordered border-light'>
+              <div className='table-responsive modern-table-wrap'>
+                <table className='table table-sm table-striped table-bordered modern-table'>
                   <thead>
                     <tr>
                       <th>ID</th>
@@ -111,7 +123,7 @@ const Admin = () => {
                           <td>{e.course}</td>
                           <td>{e.submittedAt ? new Date(e.submittedAt).toLocaleString() : "-"}</td>
                           <td>
-                            <button className='btn btn-sm btn-warning' onClick={() => deleteEntries(e._id)}>DELETE</button>
+                            <button className='btn btn-sm danger-btn' onClick={() => deleteEntries(e._id)}>DELETE</button>
                           </td>
                         </tr>
                       )
@@ -122,7 +134,7 @@ const Admin = () => {
             </div>
           )}
         </div>
-      </section>
+      </Motion.section>
       <section id='addcourse'>
         <AddCourse />
       </section>
@@ -131,3 +143,4 @@ const Admin = () => {
 }
 
 export default Admin
+

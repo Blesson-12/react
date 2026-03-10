@@ -1,4 +1,5 @@
-import React, { useEffect, useState } from 'react'
+﻿import React, { useEffect, useState } from 'react'
+import { motion as Motion } from 'framer-motion'
 const API = "https://academy-management-1.onrender.com"
 const Courses = () => {
   const [course, setCourses] = useState([])
@@ -35,41 +36,62 @@ const Courses = () => {
     <>
       <div className='container '>
 
-        <h2 className='text-warning text-center '>COURSES</h2>
-        <hr className="border border-warning w-25 mx-auto" />
+        <Motion.h2
+          className='section-title text-center'
+          initial={{ opacity: 0, y: 14 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.4 }}
+        >
+          COURSES
+        </Motion.h2>
+        <Motion.hr
+          className="border section-divider w-25 mx-auto"
+          initial={{ opacity: 0 }}
+          whileInView={{ opacity: 1 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.4, delay: 0.05 }}
+        />
 
         {course.length === 0 ? (
           <div>
-            <h2 className='text-light '>Courses will be update soon ...</h2>
+            <h2 className='soft-title'>Courses will be update soon ...</h2>
           </div>
         ) : (
           <div className='d-flex flex-wrap justify-content-center my-5 mx-2 gap-4'>
 
             {course.map((course, id) => {
               return (
-                <div className='card course-card' key={id} style={{ width: '15rem' }}>
-                  <div className='card-body '>
+                <Motion.div
+                  className='card course-card'
+                  key={id}
+                  initial={{ opacity: 0, y: 16 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: false, amount: 0.2 }}
+                  transition={{ duration: 0.35, delay: id * 0.06 }}
+                >
+                  <div className='card-body d-flex flex-column h-100'>
                     <h4 className='card-title'>{course.coursename}</h4>
                     <p className='card-text'>{course.description}</p>
-                    <a className='btn  btn-warning mt-auto' onClick={() => { openCourse(course) }}>Course Details</a>
+                    <button className='btn modern-btn mt-auto' type='button' onClick={() => { openCourse(course) }}>Course Details</button>
                   </div>
-                </div>
+                </Motion.div>
 
               )
             })}{selectedCourse && (
-              <div className='modal bg-transparent show d-block tabIndex="-1"' style={{ backgroundColor: 'rgba(0,0,0,0.5)', zIndex: 1500 }}>
-                <div className='modal-dialog modal-dialog-centered '>
-                  <div className='modal-content bg-light text-dark'>
-                    <div className='modal-header text-dark'>
+              <div className='modal bg-transparent show d-block' tabIndex="-1" style={{ backgroundColor: 'rgba(0,0,0,0.55)', zIndex: 1500 }}>
+                <div className='modal-dialog modal-dialog-centered modal-modern'>
+                  <div className='modal-content'>
+                    <div className='modal-header'>
                       <h2 className=''>{selectedCourse.coursename}</h2>
-                      <button type='button' className='btn-close btn-close-white' onClick={closeCourse}></button>
+                      <button type='button' className='btn-close closebutton' onClick={closeCourse}></button>
                     </div>
                     <div className='modal-body'>
                       <p className='text-bold'>Description: {selectedCourse.description}</p>
                       <p>Course Duration  :  {selectedCourse.duration}</p>
                     </div>
                     <div className=' modal-footer'>
-                      <button type='button' className='btn btn-warning ' onClick={closeCourse}>Close</button>
+                      <button type='button' className='btn modern-btn' onClick={closeCourse}>Close</button>
                     </div>
                   </div>
                 </div>
@@ -86,3 +108,4 @@ const Courses = () => {
 }
 
 export default Courses
+
